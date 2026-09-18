@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="ms" data-theme="">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kalkulator Harga Print</title>
+<link rel="icon" type="image/jpeg" href="https://raw.githubusercontent.com/zahiruddin0/HTML-2/refs/heads/main/PROFILE%20ZAHIRUDDIN/ZAHIRUDDIN.jpg">
+<script>
+try{
+  var pt = localStorage.getItem('pp-theme');
+  if(!pt){
+    pt = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  document.documentElement.setAttribute('data-theme', pt);
+}catch(e){}
+</script>
+<style>
+:root{
+  --bg:#eef1f6;
+  --card:#ffffff;
+  --text:#17202a;
+  --muted:#5c6b7e;
+  --border:#dde3ec;
+  --accent:#2563eb;
+  --accent-soft:#e3edfe;
+  --bw:#475569;
+  --bw-soft:#e5e9f0;
+  --color:#e11d48;
+  --color-soft:#fce7ec;
+  --ok:#059669;
+  --ok-soft:#d9f2e8;
+  --danger:#dc2626;
+  --danger-soft:#fde8e8;
+  --shadow:0 6px 24px rgba(15,23,42,.08);
+  --radius:16px;
+}
+html[data-theme="dark"]{
+  --bg:#0f172a;
+  --card:#1e293b;
+  --text:#e5eaf2;
+  --muted:#93a3b8;
+  --border:#334155;
+  --accent:#3b82f6;
+  --accent-soft:#1d3a5f;
+  --bw:#cbd5e1;
+  --bw-soft:#334155;
+  --color:#fb7185;
+  --color-soft:#3b1d28;
+  --ok:#34d399;
+  --ok-soft:#12352b;
+  --danger:#f87171;
+  --danger-soft:#3d1f1f;
+  --shadow:0 6px 24px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  padding:16px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  transition:background .3s,color .3s;
+}
+.wrap{width:100%;max-width:480px}
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:16px;
+}
+.brand{display:flex;align-items:center;gap:10px}
+.brand img{width:42px;height:42px;border-radius:50%;object-fit:cover;border:2px solid var(--accent)}
+.brand h1{font-size:17px;font-weight:700}
+.brand p{font-size:12px;color:var(--muted)}
+.theme-btn{
+  background:var(--card);
+  border:1px solid var(--border);
+  color:var(--text);
+  border-radius:999px;
+  padding:8px 12px;
+  font-size:13px;
+  cursor:pointer;
+  transition:background .2s,transform .1s;
+}
+.theme-btn:active{transform:scale(.96)}
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:18px;
+  margin-bottom:16px;
+}
+.field{margin-bottom:16px}
+.field label{display:flex;align-items:center;justify-content:space-between;font-size:14px;font-weight:600;margin-bottom:8px}
+.price-tag{font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px}
+.tag-bw{background:var(--bw-soft);color:var(--bw)}
+.tag-color{background:var(--color-soft);color:var(--color)}
+.input-row{display:flex;gap:10px}
+.input-row input{
+  flex:1;
+  min-width:0;
+  font-size:20px;
+  font-weight:700;
+  text-align:center;
+  padding:13px;
+  border:2px solid var(--border);
+  border-radius:12px;
+  background:var(--bg);
+  color:var(--text);
+  outline:none;
+  transition:border-color .2s;
+}
+.input-row input:focus{border-color:var(--accent)}
+.plus-btn{
+  width:52px;
+  font-size:24px;
+  font-weight:700;
+  border:none;
+  border-radius:12px;
+  background:var(--accent);
+  color:#fff;
+  cursor:pointer;
+  transition:filter .2s,transform .1s;
+}
+.minus-btn{
+  width:52px;
+  font-size:24px;
+  font-weight:700;
+  border:2px solid var(--border);
+  border-radius:12px;
+  background:var(--card);
+  color:var(--text);
+  cursor:pointer;
+  transition:filter .2s,transform .1s;
+}
+.plus-btn:active,.minus-btn:active{transform:scale(.94)}
+.plus-btn:hover{filter:brightness(1.08)}
+.breakdown{margin-top:6px}
+.row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:9px 12px;
+  border-radius:10px;
+  margin-bottom:8px;
+  font-size:13px;
+}
+.row-bw{background:var(--bw-soft);color:var(--bw)}
+.row-color{background:var(--color-soft);color:var(--color)}
+.row strong{font-size:15px}
+.total-box{
+  margin-top:14px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:linear-gradient(135deg,var(--accent),#7c3aed);
+  color:#fff;
+  border-radius:12px;
+  padding:16px;
+}
+.total-box .lbl{font-size:13px;opacity:.9}
+.total-box .amt{font-size:28px;font-weight:800}
+.total-box .sub{font-size:12px;opacity:.85;margin-top:2px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.btn{
+  border:none;
+  border-radius:12px;
+  padding:13px;
+  font-size:14px;
+  font-weight:600;
+  cursor:pointer;
+  transition:filter .2s,transform .1s;
+}
+.btn:active{transform:scale(.96)}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-ok{background:var(--ok);color:#fff}
+.btn-soft{background:var(--card);color:var(--text);border:1px solid var(--border)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.summary-note{
+  margin-top:12px;
+  font-size:12px;
+  color:var(--muted);
+  text-align:center;
+}
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:24px;
+  transform:translate(-50%,120px);
+  background:#111827;
+  color:#fff;
+  padding:12px 20px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:600;
+  box-shadow:0 6px 20px rgba(0,0,0,.3);
+  opacity:0;
+  transition:transform .3s,opacity .3s;
+  z-index:99;
+}
+.toast.show{transform:translate(-50%,0);opacity:1}
+#loader{
+  position:fixed;
+  inset:0;
+  background:var(--bg);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:18px;
+  z-index:1000;
+  transition:opacity .5s ease, visibility .5s ease;
+}
+#loader.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.loader-ring{
+  width:72px;
+  height:72px;
+  border-radius:50%;
+  background:conic-gradient(from 0deg, var(--accent), #7c3aed, transparent 60%);
+  -webkit-mask:radial-gradient(farthest-side, transparent calc(100% - 7px), #000 calc(100% - 6px));
+  mask:radial-gradient(farthest-side, transparent calc(100% - 7px), #000 calc(100% - 6px));
+  animation:spin 1s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader-brand{
+  font-size:20px;
+  font-weight:800;
+  letter-spacing:1px;
+  background:linear-gradient(90deg, var(--muted), var(--accent), var(--muted));
+  background-size:200% 100%;
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  animation:shimmer 2s linear infinite;
+}
+@keyframes shimmer{to{background-position:-200% 0}}
+.loader-dots{display:flex;gap:8px}
+.loader-dots span{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:var(--accent);
+  animation:bounce 1.2s ease-in-out infinite;
+}
+.loader-dots span:nth-child(2){animation-delay:.15s}
+.loader-dots span:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-10px);opacity:1}}
+@media (max-width:420px){
+  body{padding:10px}
+  .card{padding:14px}
+  .actions{grid-template-columns:1fr}
+  .plus-btn{width:48px}
+}
+</style>
+</head>
+<body>
+<div id="loader">
+  <div class="loader-ring"></div>
+  <div class="loader-brand">Harga Print</div>
+  <div class="loader-dots"><span></span><span></span><span></span></div>
+</div>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">
+      <img src="https://raw.githubusercontent.com/zahiruddin0/HTML-2/refs/heads/main/PROFILE%20ZAHIRUDDIN/ZAHIRUDDIN.jpg" alt="logo">
+      <div>
+        <h1>Kalkulator Harga Print</h1>
+        <p>Hitam putih RM0.30 &middot; Warna RM0.50</p>
+      </div>
+    </div>
+    <button class="theme-btn" id="themeBtn" type="button">Tukar ke Gelap</button>
+  </div>
+
+  <div class="card">
+    <div class="field">
+      <label for="bw"><span>Hitam Putih</span><span class="price-tag tag-bw">30 sen / helai</span></label>
+      <div class="input-row">
+        <input id="bw" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="0" aria-label="Bilangan helaian hitam putih">
+        <button class="minus-btn" type="button" data-target="bw" data-step="-1" aria-label="Tolak satu helaian hitam putih">&minus;</button>
+        <button class="plus-btn" type="button" data-target="bw" data-step="1" aria-label="Tambah satu helaian hitam putih">+</button>
+      </div>
+    </div>
+    <div class="field">
+      <label for="color"><span>Berwarna</span><span class="price-tag tag-color">50 sen / helai</span></label>
+      <div class="input-row">
+        <input id="color" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="0" aria-label="Bilangan helaian berwarna">
+        <button class="minus-btn" type="button" data-target="color" data-step="-1" aria-label="Tolak satu helaian berwarna">&minus;</button>
+        <button class="plus-btn" type="button" data-target="color" data-step="1" aria-label="Tambah satu helaian berwarna">+</button>
+      </div>
+    </div>
+
+    <div class="breakdown">
+      <div class="row row-bw" id="rowBw">
+        <span id="descBw">Hitam Putih: 0 helai &times; 30 sen</span>
+        <strong id="amtBw">RM0.00</strong>
+      </div>
+      <div class="row row-color" id="rowColor">
+        <span id="descColor">Berwarna: 0 helai &times; 50 sen</span>
+        <strong id="amtColor">RM0.00</strong>
+      </div>
+    </div>
+
+    <div class="total-box">
+      <div>
+        <div class="lbl">JUMLAH KESELURUHAN</div>
+        <div class="amt" id="totalDisplay">RM0.00</div>
+        <div class="sub" id="sheetsSub">0 helai</div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" id="copyBtn" type="button">Salin Ringkasan</button>
+      <button class="btn btn-soft" id="resetBtn" type="button">Reset</button>
+    </div>
+    <p class="summary-note">Tekan "Salin Ringkasan" untuk terus hantar harga ke WhatsApp / nota.</p>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+function clamp(field){ return field.value === '' ? 0 : Math.min(9999, Math.max(0, parseInt(field.value,10) || 0)); }
+function fmt(n){ return 'RM' + n.toFixed(2); }
+
+var bwEl = document.getElementById('bw');
+var colorEl = document.getElementById('color');
+var totalEl = document.getElementById('totalDisplay');
+var sheetsEl = document.getElementById('sheetsSub');
+var descBw = document.getElementById('descBw');
+var amtBw = document.getElementById('amtBw');
+var descColor = document.getElementById('descColor');
+var amtColor = document.getElementById('amtColor');
+var copyBtn = document.getElementById('copyBtn');
+var resetBtn = document.getElementById('resetBtn');
+
+function update(){
+  var bw = clamp(bwEl);
+  var color = clamp(colorEl);
+  var bwAmt = bw * 0.30;
+  var colorAmt = color * 0.50;
+  var total = bwAmt + colorAmt;
+  document.getElementById('rowBw').style.display = bw > 0 ? 'flex' : 'none';
+  document.getElementById('rowColor').style.display = color > 0 ? 'flex' : 'none';
+  descBw.textContent = 'Hitam Putih: ' + bw + ' helai x 30 sen';
+  amtBw.textContent = fmt(bwAmt);
+  descColor.textContent = 'Berwarna: ' + color + ' helai x 50 sen';
+  amtColor.textContent = fmt(colorAmt);
+  totalEl.textContent = fmt(total);
+  var parts = [];
+  if(bw>0) parts.push(bw+' b/w');
+  if(color>0) parts.push(color+' warna');
+  sheetsEl.textContent = (bw+color) + ' helai' + (parts.length ? ' (' + parts.join(', ') + ')' : '');
+  var has = (bw+color) > 0;
+  copyBtn.disabled = !has;
+}
+function numericOnly(field){
+  field.addEventListener('input', function(){
+    var clean = field.value.replace(/[^0-9]/g,'').slice(0,4);
+    if(field.value !== clean) field.value = clean;
+    field.value = clean;
+    update();
+  });
+  field.addEventListener('keydown', function(e){
+    if((e.key.length === 1 && !/[0-9]/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Delete' && e.key !== 'Tab' && e.key !== 'ArrowUp' && e.key !== 'ArrowDown' && e.key !== 'ArrowLeft' && e.key !== 'ArrowRight' && e.key !== 'Enter')){
+      e.preventDefault();
+    }
+  });
+}
+numericOnly(bwEl);
+numericOnly(colorEl);
+
+document.querySelectorAll('.plus-btn, .minus-btn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var field = document.getElementById(btn.getAttribute('data-target'));
+    var step = parseInt(btn.getAttribute('data-step'),10) || 0;
+    var v = Math.max(0, clamp(field) + step);
+    field.value = v;
+    update();
+  });
+});
+
+function buildSummary(){
+  var bw = clamp(bwEl);
+  var color = clamp(colorEl);
+  var now = new Date();
+  var bwAmt = bw * 0.30;
+  var colorAmt = color * 0.50;
+  var total = bwAmt + colorAmt;
+  var lines = [];
+  lines.push('Harga Print - ' + now.toLocaleDateString('ms-MY') + ' ' + now.toLocaleTimeString('ms-MY',{hour:'2-digit',minute:'2-digit'}));
+  if(bw > 0) lines.push('Hitam Putih: ' + bw + ' helai x 30 sen = ' + fmt(bwAmt));
+  if(color > 0) lines.push('Berwarna: ' + color + ' helai x 50 sen = ' + fmt(colorAmt));
+  lines.push('Jumlah: ' + fmt(total));
+  return lines.join('\n');
+}
+
+function showToast(msg){
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(function(){ t.classList.remove('show'); }, 2200);
+}
+
+copyBtn.addEventListener('click', function(){
+  var text = buildSummary();
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(function(){
+      showToast('Ringkasan disalin ke papan keratan');
+    }).catch(function(){ fallbackCopy(text); });
+  }else{
+    fallbackCopy(text);
+  }
+});
+function fallbackCopy(text){
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.top = '-1000px';
+  document.body.appendChild(ta);
+  ta.select();
+  try{
+    document.execCommand('copy');
+    showToast('Ringkasan disalin ke papan keratan');
+  }catch(e){
+    showToast('Gagal salin. Salin manual.');
+  }
+  document.body.removeChild(ta);
+}
+
+resetBtn.addEventListener('click', function(){
+  bwEl.value = '';
+  colorEl.value = '';
+  update();
+});
+
+var root = document.documentElement;
+var themeBtn = document.getElementById('themeBtn');
+function applyTheme(t){
+  root.setAttribute('data-theme', t);
+  themeBtn.textContent = t === 'dark' ? 'Tukar ke Terang' : 'Tukar ke Gelap';
+}
+applyTheme(root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light');
+themeBtn.addEventListener('click', function(){
+  var current = root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+  var next = current === 'dark' ? 'light' : 'dark';
+  applyTheme(next);
+  try{ localStorage.setItem('pp-theme', next); }catch(e){}
+});
+
+function hideLoader(){
+  var l = document.getElementById('loader');
+  if(l){ l.classList.add('hidden'); }
+}
+window.addEventListener('load', function(){ setTimeout(hideLoader, 400); });
+setTimeout(hideLoader, 2500);
+
+update();
+</script>
+</body>
+</html>
